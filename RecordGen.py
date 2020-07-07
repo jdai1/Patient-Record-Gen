@@ -32,7 +32,7 @@ from reportlab.lib.units import inch, cm
 # In[4]:
 
 
-input_file_path = '/Users/Julian/Documents/Github/Patient-Record-Gen/Input/SourceData/'
+input_file_path = '/Users/Julian/Documents/Numedi-Internship/2020/PatientRecordGen/Input/SourceData/'
 input_dm = input_file_path + r'demo.sas7bdat'
 input_pe = input_file_path + r'pege.sas7bdat'
 input_ae = input_file_path + r'advevnts.sas7bdat'
@@ -362,7 +362,7 @@ len(df_list)
 
 # base doc template is more customizable than simple doc template, which provides a set template and frame layout
 # the margins define the area of the pdf that can be written on while the pagesize defines the actual size of the pdf
-doc = BaseDocTemplate("/Users/Julian/Documents/GitHub/Patient-Record-Gen/Output/output.pdf", 
+doc = BaseDocTemplate("/Users/Julian/Documents/Numedi-Internship/2020/PatientRecordGen/Output/output.pdf", 
                       topMargin=1*inch, bottomMargin=1*inch, rightMargin=0.2*inch, leftMargin=0.2*inch, 
                       pagesize= (15*inch, 13*inch))
 
@@ -559,7 +559,7 @@ doc.height.
 # this code is very similar to your version of the myheader function, with the exception of a few minor changes
 def header(canvas, doc):
     canvas.saveState()
-    logo = "/Users/Julian/Documents/GitHub/Patient-Record-Gen/Input/gnu.png"
+    logo = "/Users/Julian/Documents/Numedi-Internship/2020/PatientRecordGen/Input/gnu.png"
     horizon_mgin = 20
     canvas.setLineWidth(.5)
     canvas.line(horizon_mgin, doc.height + doc.bottomMargin - 50, horizon_mgin + 100, doc.height + doc.bottomMargin - 50)
@@ -570,7 +570,7 @@ def header(canvas, doc):
     
     # x-y coordinates of the logo, starting from the lower left hand corner
     # The logo's size is changed by changing its width. The heigh will resize to preserve the ratio of the png
-    canvas.drawImage(logo, horizon_mgin, doc.bottomMargin + doc.height - 5, width=0.6*inch, preserveAspectRatio=True)
+    canvas.drawImage(logo, horizon_mgin, doc.bottomMargin + doc.height, width=0.6*inch, preserveAspectRatio=True)
     
     canvas.setFont('Times-Roman', 10.5)
     canvas.drawString(left_mgin, doc.height + doc.bottomMargin, "Numedi" )
