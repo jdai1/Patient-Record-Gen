@@ -39,7 +39,7 @@ input_ae = input_file_path + r'advevnts.sas7bdat'
 input_ds = input_file_path + r'conmeds.sas7bdat'
 
 
-# In[49]:
+# In[5]:
 
 
 # meta data
@@ -49,9 +49,10 @@ ae_meta = pyreadstat.read_sas7bdat(input_ae)
 ds_meta = pyreadstat.read_sas7bdat(input_ds)
 
 
-# In[50]:
+# In[6]:
 
 
+# meta data manipulation to access column values
 dm_dict = dict()
 for i in range(0, len(dm_meta[1].variable_measure.keys())):
     oid = list(dm_meta[1].variable_measure.keys())[i]
@@ -92,52 +93,52 @@ ds = pd.read_sas(input_ds, format='sas7bdat', encoding='latin-1')
 pd.set_option("display.max_rows", None, "display.max_columns", None)
 
 
-# In[10]:
+# In[9]:
 
 
 dm.shape
 
 
-# In[11]:
+# In[10]:
 
 
 pe.shape
 
 
-# In[12]:
+# In[11]:
 
 
 ae.shape
 
 
-# In[13]:
+# In[12]:
 
 
 ds.shape
 
 
-# In[14]:
+# In[13]:
 
 
 subj_id = 1.0
 site_num = dm[dm['SUBJID'] == subj_id].iloc[0]['SITE']
-date = 'Data Extracted Date: xxx'
 site_num
 
 
-# In[15]:
+# In[14]:
 
 
 import math
 
 
-# In[43]:
+# In[15]:
 
 
-# DATA MANIPULATION
+# BASIC INFORMATION DATA MANIPULATION
+# Example data manipulation and concatenation. This data is not shown on the output.pdf
 
 
-# In[44]:
+# In[16]:
 
 
 subj_dm = dm[dm['SUBJID'] == subj_id]
@@ -156,7 +157,7 @@ dm_table.reset_index(inplace=True)
 dm_table.rename(columns={'index':'Key', 0:'Value'}, inplace=True)
 
 
-# In[45]:
+# In[17]:
 
 
 subj_ds = ds[ds['SUBJID'] == subj_id]
@@ -172,7 +173,7 @@ ds_table.reset_index(inplace=True)
 ds_table.rename(columns={'index':'Key', 0:'Value'}, inplace=True)
 
 
-# In[47]:
+# In[18]:
 
 
 subj_pe = pe[pe['SUBJID'] == subj_id]
@@ -195,16 +196,17 @@ pe_table.reset_index(inplace=True)
 pe_table.rename(columns={'index':'Key', 0:'Value'}, inplace=True)
 
 
-# In[20]:
+# In[19]:
 
 
+# adds paragraph objects to the values of the dataframe
 def makeFlowable(table):
     # allows autowrapping --> input the data as report lab flowables instead of simple text
     # prevents aliasing
     labelStyle = ParagraphStyle('Normal',
                                 fontSize=10,
                                 fontName='Times-Roman',
-                                textColor=colors.darkblue)
+                                textColor=colors.slategrey)
                                 
     dataStyle = ParagraphStyle('Normal',
                                 fontSize=10,
@@ -222,7 +224,7 @@ def makeFlowable(table):
     return flowable
 
 
-# In[21]:
+# In[20]:
 
 
 # convert the extracted data into Paragraph objects to allow autowrapping 
@@ -238,15 +240,22 @@ dmdspe_table = dmdspe_table.replace(np.nan, '', regex=True)
 dmdspe_table.reset_index(drop=True, inplace=True)
 
 
-# In[48]:
+# In[21]:
+
+
+# ADVERSE EVENT DATA MANIPULATION
+# Data manipulation of adverse events which are shown on the output.pdf
+
+
+# In[22]:
 
 
 subj_ae = ae[ae['SUBJID'] == subj_id]
 ae_data = subj_ae[['AE_1', 'SAE_1', 'STRTDT_1', 'STOPDT_1', 'ONGO_1', 'SEV_1', 'REL_1', 'OUTC_1', 'AE_2', 'SAE_2', 
                    'STRTDT_2', 'STOPDT_2', 'ONGO_2', 'SEV_2', 'REL_2', 'OUTC_2']]
-ae_data.rename(columns={'AE1':'Adverse Event 1:', 'SAE1':'Serious AE 1:', 'STRTDT_1':'Start Date:', 'STOPDT_1':'Stop Date:', 
-                        'ONGO_1':'Ongoing:', 'SEV_1':'Severity:', 'REL_1':'Relationship:', 'OUTC_1':'Outcome:', 'AE2':'Adverse Event 2:', 
-                        'SAE2':'Serious AE 2:', 'STRTDT_2':'Start Date:', 'STOPDT_2':'Stop Date:', 'ONGO_2':'Ongoing:',
+ae_data.rename(columns={'AE_1':'Adverse Event 1:', 'SAE_1':'Serious AE 1:', 'STRTDT_1':'Start Date:', 'STOPDT_1':'Stop Date:', 
+                        'ONGO_1':'Ongoing:', 'SEV_1':'Severity:', 'REL_1':'Relationship:', 'OUTC_1':'Outcome:', 'AE_2':'Adverse Event 2:', 
+                        'SAE_2':'Serious AE 2:', 'STRTDT_2':'Start Date:', 'STOPDT_2':'Stop Date:', 'ONGO_2':'Ongoing:',
                         'SEV_2':'Severity', 'REL_2':'Relationship', 'OUTC_2':'Outcome'}, inplace=True)
 
 ae_data.reset_index(drop=True, inplace=True)
@@ -268,7 +277,7 @@ for i in range(0, ae_data.shape[0]):
     ae_data_list.append(specific_ae_event_df)
 
 
-# In[24]:
+# In[23]:
 
 
 # create a list of tables as input into the table
@@ -276,7 +285,7 @@ ae_table_list = []
 i = 1
 for ae_df in ae_data_list:
     ae_flowable = makeFlowable(ae_df.astype(str))
-    labels = pd.DataFrame([['2 - ADVERSE EVENT (' + str(i) + ')', '', '', ''], ['Event', '','State', '']], 
+    labels = pd.DataFrame([['AE (' + str(i) + ')', '', '', ''], ['Event', '','State', '']], 
                                   columns=['Key', 'Value', 'Key', 'Value'])
     ae_table = labels.append(ae_flowable)
     ae_table = ae_table.replace(np.nan, '', regex=True)
@@ -285,18 +294,62 @@ for ae_df in ae_data_list:
     i += 1
 
 
-# In[29]:
+# In[24]:
+
+
+# returns the numerical value of the length of the longest word in a given column of data which
+# represents the space it would take up in the pdf
+def findColumnWidth(data):
+    columnWidths = []
+    # a little sloppy here due to creation of extra pdf, but I don't see another way around finding
+    # length of a word in the pdf
+    c = canvas.Canvas('tester.pdf')
+    for paragraph in data:
+        if paragraph != '':
+            columnWidths.append(c.stringWidth(paragraph.getPlainText(), 'Times-Roman', 10))
+    width = 0
+    for w in columnWidths:
+        if w > width:
+            width = w
+    return width
+
+
+# In[25]:
+
+
+# list of the list of column widths for each adversity event table in ae_table_list
+aelColumnWidths = []
+for ael_table in ae_table_list:
+    ael_data = ael_table.iloc[2:]
+    aeColumnWidths = []
+    for i in range(0, ael_data.shape[1]):
+        l = ael_data.iloc[:, i].tolist()
+        aeColumnWidths.append(findColumnWidth(l) + 25)
+    aelColumnWidths.append(aeColumnWidths)
+
+
+# In[26]:
+
+
+# column widths match the order andd identity of the tables that are placed into the pdf in df_list
+columnWidths = []
+for colWidth in aelColumnWidths:
+    columnWidths.append(colWidth)
+
+
+# In[27]:
 
 
 # input
 #--> autowrapping example
 #df_list = [dmdspe_flowable] 
-df_list = [dmdspe_table]
+df_list = []
 for table in ae_table_list:
     df_list.append(table)
+len(df_list)
 
 
-# In[30]:
+# In[28]:
 
 
 # report lab pdf generation
@@ -304,7 +357,7 @@ for table in ae_table_list:
 #
 
 
-# In[37]:
+# In[29]:
 
 
 # base doc template is more customizable than simple doc template, which provides a set template and frame layout
@@ -314,12 +367,15 @@ doc = BaseDocTemplate("/Users/Julian/Documents/GitHub/Patient-Record-Gen/Output/
                       pagesize= (15*inch, 13*inch))
 
 # the frame defines an area that flowables such as tables can be added to
-frame = Frame(doc.leftMargin, doc.bottomMargin, doc.rightMargin, doc.height - 0.75*inch, id='data')
+frame = Frame(doc.leftMargin, doc.bottomMargin, doc.rightMargin, doc.height - 1*inch, id='data')
 doc.height
 
 
-# In[38]:
+# In[30]:
 
+
+background_color = colors.slategrey
+header_color = colors.black
 
 element = []
 
@@ -338,15 +394,15 @@ table_style = TableStyle([
                         ('BOTTOMPADDING', (0, 0), (-1, -1), 5),
                         
                         #background colors
-                        ('BACKGROUND', (0, 1), (-1, 1), colors.royalblue),
+                        ('BACKGROUND', (0, 1), (-1, 1), background_color),
     
     
                         #fonts
-                        ('FONT', (0, 0), (0, 0), 'Times-Roman', 13),
+                        ('FONT', (0, 0), (0, 0), 'Times-Roman', 11.5),
                         ('FONT', (0, 1), (-1, 1), 'Times-Roman', 11),
 
                         #textcolors
-                        ('TEXTCOLOR', (0, 0), (0, 0), colors.darkblue),
+                        ('TEXTCOLOR', (0, 0), (0, 0), header_color),
                         ('TEXTCOLOR', (0, 1), (-1, 1), colors.white),
     
     
@@ -362,7 +418,7 @@ table_style_bot = TableStyle([
                         ('BOTTOMPADDING', (0, 0), (-1, -1), 5),
                         
                         #background colors
-                        ('BACKGROUND', (0, 0), (-1, 0), colors.royalblue),
+                        ('BACKGROUND', (0, 0), (-1, 0), background_color),
     
                         #fonts
                         ('FONT', (0, 0), (-1, 0), 'Times-Roman', 11),
@@ -408,7 +464,6 @@ for df in df_list:
     table_height = table.wrap(0, available_height)[1]
     
     npheader = np.array(df.iloc[0:3])
-    print(columnWidths[index][0:3])
     header_table = Table(npheader.tolist(), columnWidths[index][0:3])
     
     if available_height <= header_table.wrap(0, available_height)[1]:
@@ -425,10 +480,11 @@ for df in df_list:
         available_height = available_height - table_height - spacer
         
     else:
+        table_add = False
         #print(3)
         # loop through number of rows starting from last and do wrap until the table height is <=
         # individual height. then separate rows from there and reconstruct table in separate pages
-        for i in range(1, nparray.shape[0]):
+        for i in range(1, nparray.shape[0] - 1):
             # top dataframe
             df1 = df.iloc[0:nparray.shape[0] - i]
             df1.reset_index(drop=True, inplace=True)
@@ -457,6 +513,7 @@ for df in df_list:
             # if the top dataframe will fit in the remaining space, add it to the pdf
             # then add the bottom df to a new page
             if (table1.wrap(0, available_height)[1] < available_height - 23):
+                table_add = True
                 element.append(table1)
                 element.append(PageBreak())
                 numPages += 1
@@ -464,10 +521,16 @@ for df in df_list:
                 element.append(Spacer(0, spacer))
                 available_height = frame.height - table2.wrap(0, available_height)[1] - spacer
                 break
+        # fail safe: if for any reason, the table is not split between 2 pages, add the table to a new page
+        if not table_add:
+            element.append(PageBreak())
+            element.append(table)
+            element.append(Spacer(0, spacer))
+            available_height = frame.height - table.wrap(0, available_height)[1] - spacer
     index += 1
 
 
-# In[39]:
+# In[31]:
 
 
 """
@@ -489,7 +552,7 @@ doc.height.
 """
 
 
-# In[51]:
+# In[32]:
 
 
 # the header function receives the canvas and the doc as parameters
@@ -498,24 +561,35 @@ def header(canvas, doc):
     canvas.saveState()
     logo = "/Users/Julian/Documents/GitHub/Patient-Record-Gen/Input/gnu.png"
     horizon_mgin = 20
-    canvas.setFont('Times-Roman', 10.5)
-    canvas.setLineWidth(.3)
+    canvas.setLineWidth(.5)
+    canvas.line(horizon_mgin, doc.height + doc.bottomMargin - 50, horizon_mgin + 100, doc.height + doc.bottomMargin - 50)
+
+    
+    # left side of header
+    left_mgin = horizon_mgin
+    
     # x-y coordinates of the logo, starting from the lower left hand corner
     # The logo's size is changed by changing its width. The heigh will resize to preserve the ratio of the png
-    canvas.drawImage(logo, horizon_mgin, doc.bottomMargin + doc.height + 5, width=0.6*inch, preserveAspectRatio=True)
-    # in drawString, the first two parameters specify the x-y coordinates
-    canvas.drawString(horizon_mgin, doc.height + doc.bottomMargin, "Numedi" )
-    canvas.drawString(horizon_mgin, doc.height + doc.bottomMargin - 15, "Protocol Snow White" )
-    canvas.drawRightString(doc.width + doc.leftMargin + doc.rightMargin - horizon_mgin, doc.height + doc.bottomMargin, "Page %d of %d" % (doc.page, numPages))
-    canvas.drawRightString(doc.width + doc.leftMargin + doc.rightMargin - horizon_mgin, doc.height + doc.bottomMargin - 15, date)
-    canvas.setFont('Times-Italic', 11)
-    canvas.drawCentredString(doc.width/2.0, doc.height + doc.bottomMargin, "Confidential")
-    canvas.setFont('Times-Roman', 14)
-    canvas.drawCentredString(doc.width/2.0, doc.height + doc.bottomMargin - 30, "PATIENT %s %s" % (subj_id, site_num))
+    canvas.drawImage(logo, horizon_mgin, doc.bottomMargin + doc.height - 5, width=0.6*inch, preserveAspectRatio=True)
+    
+    canvas.setFont('Times-Roman', 10.5)
+    canvas.drawString(left_mgin, doc.height + doc.bottomMargin, "Numedi" )
+    canvas.drawString(left_mgin, doc.height + doc.bottomMargin - 15, "Protocol Dream State")
+    canvas.drawString(left_mgin, doc.height + doc.bottomMargin - 30, "Patient %s %s" % (subj_id, site_num))
+    
+    # right side of header
+    right_mgin = doc.width + doc.leftMargin + doc.rightMargin - horizon_mgin
+    canvas.drawRightString(right_mgin, doc.height + doc.bottomMargin, "Page %d of %d" % (doc.page, numPages))
+    canvas.setFont('Times-Italic', 10.5)
+    canvas.drawRightString(right_mgin, doc.height + doc.bottomMargin - 15, "Confidential")
+    
+    canvas.setFont('Courier-Bold', 12)
+    canvas.drawString(horizon_mgin, doc.height + doc.bottomMargin - 45, "Adverse Events")
+    
     canvas.restoreState()
 
 
-# In[52]:
+# In[33]:
 
 
 # the frame is then added to a page template which is in turn added to the doc itself
@@ -523,29 +597,17 @@ template = PageTemplate(id='report', frames=frame, onPage=header)
 doc.addPageTemplates([template])
 
 
-# In[53]:
+# In[34]:
+
+
+len(element)
+
+
+# In[35]:
 
 
 # supply the formatted tables into the doc
 doc.build(element)
-
-
-# In[ ]:
-
-
-
-
-
-# In[ ]:
-
-
-
-
-
-# In[ ]:
-
-
-
 
 
 # In[ ]:
