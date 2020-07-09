@@ -13881,6 +13881,9 @@ See the caveats in the documentation: https://pandas.pydata.org/pandas-docs/stab
 <span class="c1"># adding the page template &#39;report&#39; to the doc</span>
 <span class="n">element</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">NextPageTemplate</span><span class="p">(</span><span class="s1">&#39;report&#39;</span><span class="p">))</span>
 
+<span class="c1"># buffer space</span>
+<span class="n">BUFFER_SPACE</span> <span class="o">=</span> <span class="mi">23</span>
+
 <span class="n">available_height</span> <span class="o">=</span> <span class="n">frame</span><span class="o">.</span><span class="n">height</span>
 
 <span class="n">table_style</span> <span class="o">=</span> <span class="n">TableStyle</span><span class="p">([</span>
@@ -14011,7 +14014,7 @@ See the caveats in the documentation: https://pandas.pydata.org/pandas-docs/stab
             
             <span class="c1"># if the top dataframe will fit in the remaining space, add it to the pdf</span>
             <span class="c1"># then add the bottom df to a new page</span>
-            <span class="k">if</span> <span class="p">(</span><span class="n">table1</span><span class="o">.</span><span class="n">wrap</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">available_height</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">available_height</span> <span class="o">-</span> <span class="mi">23</span><span class="p">):</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">table1</span><span class="o">.</span><span class="n">wrap</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">available_height</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">available_height</span> <span class="o">-</span> <span class="n">BUFFER_SPACE</span><span class="p">):</span>
                 <span class="n">table_add</span> <span class="o">=</span> <span class="kc">True</span>
                 <span class="n">element</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">table1</span><span class="p">)</span>
                 <span class="n">element</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">PageBreak</span><span class="p">())</span>

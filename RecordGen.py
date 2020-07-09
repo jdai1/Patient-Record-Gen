@@ -382,6 +382,9 @@ element = []
 # adding the page template 'report' to the doc
 element.append(NextPageTemplate('report'))
 
+# buffer space
+BUFFER_SPACE = 23
+
 available_height = frame.height
 
 table_style = TableStyle([
@@ -512,7 +515,7 @@ for df in df_list:
             
             # if the top dataframe will fit in the remaining space, add it to the pdf
             # then add the bottom df to a new page
-            if (table1.wrap(0, available_height)[1] < available_height - 23):
+            if (table1.wrap(0, available_height)[1] < available_height - BUFFER_SPACE):
                 table_add = True
                 element.append(table1)
                 element.append(PageBreak())
